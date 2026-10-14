@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Gridshare</title>
+<meta name="description" content="Gridshare: find a neighbor with power during a blackout and pay per hour. MVP prototype with mock data.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&family=Nunito:wght@400..800&display=swap">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="page">
+
+  <div class="phone" aria-label="Gridshare app prototype">
+    <div class="status"><span>19:42</span><span class="batt">5% <i style="--lvl:8%"></i></span></div>
+    <div class="app" id="app">
+
+      <section class="screen" data-screen="map">
+        <div class="alert">⚠ Blackout in your area since 18:40</div>
+        <h2>Power near you</h2>
+        <div class="map" id="map" aria-label="Map of neighbors with power">
+          <div class="blk" style="left:6%;top:8%;width:30%;height:28%"></div>
+          <div class="blk" style="left:58%;top:6%;width:34%;height:30%"></div>
+          <div class="blk" style="left:6%;top:58%;width:34%;height:34%"></div>
+          <div class="blk" style="left:58%;top:58%;width:34%;height:34%"></div>
+          <div class="me" title="You"></div>
+        </div>
+        <div class="list" id="spotList"></div>
+      </section>
+
+      <section class="screen" data-screen="detail" hidden>
+        <button class="back" data-go="map">← Back to map</button>
+        <h2 id="dName"></h2>
+        <div class="row"><span class="tag ok" id="dRating"></span><span class="muted" id="dDist"></span></div>
+        <div class="card">
+          <div class="row"><span class="muted">Power source</span><b id="dDevice"></b></div>
+          <div class="row"><span class="muted">Available</span><b id="dCap"></b></div>
+          <div class="row"><span class="muted">Price</span><b class="price" id="dPrice"></b></div>
+        </div>
+        <h3>How long do you need?</h3>
+        <div class="seg" id="hours">
+          <button aria-pressed="true" data-h="1">1 hour</button>
+          <button aria-pressed="false" data-h="2">2 hours</button>
+          <button aria-pressed="false" data-h="3">3 hours</button>
+        </div>
+        <div class="row"><span class="muted">Total, held in escrow</span><span class="price" id="dTotal"></span></div>
+        <button class="btn" id="bookBtn">Book &amp; pay</button>
+      </section>
+
+      <section class="screen" data-screen="pay" hidden>
+        <button class="back" data-go="detail">← Back</button>
+        <h2>Scan with Solana Pay</h2>
+        <p class="muted" style="margin:0">Your payment waits in escrow. The neighbor gets it only after your charge is done.</p>
+        <div class="qr" id="payQr"></div>
+        <div class="card">
+          <div class="row"><span class="muted">Amount</span><b class="price" id="pAmount"></b></div>
+          <div class="row"><span class="muted">To</span><b id="pTo"></b></div>
+          <div class="row"><span class="muted">Network</span><b>Solana devnet (mock)</b></div>
+        </div>
+        <button class="btn" id="payBtn">Pay with wallet</button>
+      </section>
+
+      <section class="screen" data-screen="charging" hidden>
+        <h2 id="cTitle">Charging at Olena's</h2>
+        <div class="big-batt"><div class="fill" id="fill"></div></div>
+        <div class="pct" id="pct">5%</div>
+        <div class="card">
+          <div class="row"><span class="muted">Escrow</span><span class="tag" id="escrowTag">Held</span></div>
+          <div class="row"><span class="muted">Amount</span><b class="price" id="cAmount"></b></div>
+        </div>
+        <button class="btn" id="finishBtn">Finish &amp; release payment</button>
+      </section>
+
+      <section class="screen" data-screen="done" hidden>
+        <h2>All charged up</h2>
+        <div class="card">
+          <div class="row"><span class="muted">Released to</span><b id="rTo"></b></div>
+          <div class="row"><span class="muted">Amount</span><b class="price" id="rAmount"></b></div>
+          <div class="muted" style="font-size:13px">Transaction (mock)</div>
+          <div class="mono" id="tx"></div>
+        </div>
+        <h3>Rate your neighbor</h3>
+        <div class="stars" id="stars"></div>
+        <button class="btn" data-go="map">Back to map</button>
+      </section>
+
+      <section class="screen" data-screen="sessions" hidden>
+        <h2>My sessions</h2>
+        <div class="list" id="sessionList"></div>
+      </section>
+
+      <section class="screen" data-screen="share" hidden>
+        <h2>Share your power</h2>
+        <div class="card">
+          <div class="row"><b>I have power to share</b><button class="toggle" id="shareToggle" aria-pressed="false" aria-label="Share my power"></button></div>
+          <div class="muted" id="shareState" style="font-size:13px">You are hidden from the map.</div>
+        </div>
+        <div class="card">
+          <div class="row"><span class="muted">Device</span><b>EcoFlow River 2</b></div>
+          <div class="row"><span class="muted">Your price</span><b class="price">0.25 USDC / hour</b></div>
+          <div class="row"><span class="muted">Earned this month</span><b class="price">4.20 USDC</b></div>
+          <div class="row"><span class="muted">Your rating</span><span class="tag ok">★ 4.9 · 17 sessions</span></div>
+        </div>
+      </section>
+
+    </div>
+    <nav class="tabs" aria-label="App sections">
+      <button data-tab="map" aria-current="true"><span>⌖</span>Map</button>
+      <button data-tab="sessions" aria-current="false"><span>⟳</span>Sessions</button>
+      <button data-tab="share" aria-current="false"><span>⚡</span>Share power</button>
+    </nav>
+    <div class="toast" id="toast" role="status"></div>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
